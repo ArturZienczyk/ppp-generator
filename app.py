@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Twój działający endpoint
-CLOUD_FUNCTION_URL = "https://generate-ppp-opinion-931441169979.us-central1.run.app/generate_ppp_opinion"
+CLOUD_FUNCTION_URL = "https://generate-ppp-opinion-931441169979.us-central1.run.app/generuj"
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
