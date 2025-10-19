@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umiesz gwizdać? - Generator Opinii PPP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎶 Umiesz gwizdać?</h1>
+            <p>Generator opinii nauczyciela wychowawcy do Poradni Psychologiczno-Pedagogicznej</p>
+        </header>
+
+        <div class="dane-ucznia">
+            <form class="forma">
+                <div class="pole">
+                    <label for="imie">Imię i nazwisko ucznia:</label>
+                    <input type="text" id="imie" placeholder="np. Jan Kowalski">
+                </div>
+                <div class="pole">
+                    <label for="wiek">Wiek:</label>
+                    <input type="number" id="wiek" min="6" max="18" placeholder="np. 10">
+                </div>
+                <div class="pole">
+                    <label for="klasa">Klasa:</label>
+                    <input type="text" id="klasa" placeholder="np. 4a">
+                </div>
+            </form>
+
+            <!-- PREMIUM TOGGLE SWITCH -->
+            <div class="view-toggle-container">
+                <span class="view-toggle-label">Tryb wyświetlania:</span>
+                <div class="view-toggle" id="viewToggle">
+                    <div class="toggle-slider"></div>
+                    <div class="toggle-options">
+                        <div class="toggle-option active" data-view="sections">
+                            <span class="toggle-icon">📋</span>
+                            <span>Sekcje</span>
+                        </div>
+                        <div class="toggle-option" data-view="compact">
+                            <span class="toggle-icon">🎯</span>
+                            <span>Kompakt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Podpowiedź rozwojowa -->
+        <div class="podpowiedz-wiek hidden" id="podpowiedz-wiek">
+            <strong>💡 Podpowiedź:</strong>
+            <span id="tekst-podpowiedzi"></span>
+        </div>
+
+        <!-- Sekcje z drag & drop -->
+        <div id="sekcje-container"></div>
+
+        <!-- Przycisk generowania -->
+        <div class="generuj-sekcja">
+            <button id="generuj-btn">✨ Generuj opinię z sercem</button>
+        </div>
+
+        <!-- Wynik -->
+        <div class="wynik hidden" id="wynik-container">
+            <h2>📄 Wygenerowana Opinia</h2>
+            <div id="wynik-opinia"></div>
+            <div class="akcje">
+                <button id="kopiuj-btn">📋 Kopiuj do schowka</button>
+                <button id="drukuj-btn">🖨️ Drukuj</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
