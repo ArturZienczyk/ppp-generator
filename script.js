@@ -460,7 +460,7 @@ function podlaczDragAndDrop() {
 // Dodawanie wybranej opcji
 function dodajWybranaOpcje(sekcja, tekst) {
     if (wybraneOpcje[sekcja].opcje.includes(tekst)) {
-        return; // Już jest
+        return;
     }
     
     wybraneOpcje[sekcja].opcje.push(tekst);
@@ -604,9 +604,9 @@ async function generujOpinie() {
     }
 }
 
-// Wywołanie AI - połączenie z Flask i Cloud Run
+// Wywołanie AI - połączenie z Cloud Functions
 async function wywolajAI(imie, wiek, klasa) {
-    
+    const response = await fetch('https://europe-west4-generatordokumentownauczyciela.cloudfunctions.net/generate-ppp-opinion', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -618,7 +618,7 @@ async function wywolajAI(imie, wiek, klasa) {
             sekcje: wybraneOpcje
         })
     });
-    const response = await fetch('https://europe-west4-generatordokumentownauczyciela.cloudfunctions.net/generate-ppp-opinion', {
+    
     if (!response.ok) {
         throw new Error('Błąd serwera: ' + response.status);
     }
