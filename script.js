@@ -606,7 +606,7 @@ async function generujOpinie() {
 
 // Wywołanie AI - połączenie z Flask i Cloud Run
 async function wywolajAI(imie, wiek, klasa) {
-    const response = await fetch('https://generate-ppp-opinion-931441169979.us-central1.run.app/generuj', {
+    
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -618,7 +618,7 @@ async function wywolajAI(imie, wiek, klasa) {
             sekcje: wybraneOpcje
         })
     });
-    
+    const response = await fetch('https://europe-west4-generatordokumentownauczyciela.cloudfunctions.net/generate-ppp-opinion', {
     if (!response.ok) {
         throw new Error('Błąd serwera: ' + response.status);
     }
