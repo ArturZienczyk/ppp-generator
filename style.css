@@ -39,13 +39,20 @@ header::before {
     right: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
     animation: pulse 15s ease-in-out infinite;
 }
 
 @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
 }
 
 h1 {
@@ -139,7 +146,7 @@ input:focus {
     border-radius: 30px;
     padding: 5px;
     cursor: pointer;
-    box-shadow: 
+    box-shadow:
         inset 0 2px 10px rgba(0, 0, 0, 0.1),
         0 8px 25px rgba(102, 126, 234, 0.3);
     border: 2px solid rgba(102, 126, 234, 0.3);
@@ -147,7 +154,7 @@ input:focus {
 }
 
 .view-toggle:hover {
-    box-shadow: 
+    box-shadow:
         inset 0 2px 10px rgba(0, 0, 0, 0.15),
         0 12px 35px rgba(102, 126, 234, 0.4),
         0 0 40px rgba(102, 126, 234, 0.2);
@@ -163,7 +170,7 @@ input:focus {
     top: 5px;
     left: 5px;
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: 
+    box-shadow:
         0 4px 15px rgba(102, 126, 234, 0.5),
         0 0 30px rgba(102, 126, 234, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -190,8 +197,15 @@ input:focus {
 }
 
 @keyframes neon-pulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 .toggle-options {
@@ -230,9 +244,17 @@ input:focus {
 }
 
 @keyframes icon-spin {
-    0% { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(180deg) scale(1.2); }
-    100% { transform: rotate(360deg) scale(1); }
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1.2);
+    }
+
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
 }
 
 .toggle-option:not(.active):hover .toggle-icon {
@@ -324,7 +346,8 @@ input:focus {
     margin: 0;
     position: sticky;
     top: 180px;
-    max-height: 1075px;  /* ← ZMIANA: było 500px, teraz 800px */
+    max-height: 1075px;
+    /* ← ZMIANA: było 500px, teraz 800px */
     overflow-y: auto;
 }
 
@@ -342,7 +365,7 @@ input:focus {
     margin-bottom: 15px;
     font-size: 1.1em;
     padding-bottom: 10px;
-    border-bottom: 2px solid rgba(255,255,255,0.3);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Trudności - czerwony */
@@ -405,17 +428,17 @@ input:focus {
 }
 
 .opcje-lista::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.05);
+    background: rgba(0, 0, 0, 0.05);
     border-radius: 10px;
 }
 
 .opcje-lista::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
 
 .opcje-lista::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.3);
 }
 
 /* Opcje do przeciągania */
@@ -427,7 +450,7 @@ input:focus {
     transition: all 0.3s ease;
     border: 2px solid transparent;
     font-size: 0.95em;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .compact-mode .opcja {
@@ -437,7 +460,7 @@ input:focus {
 
 .opcja:hover {
     transform: translateX(5px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-color: #667eea;
 }
 
@@ -508,6 +531,7 @@ input:focus {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -630,8 +654,15 @@ input:focus {
 }
 
 @keyframes pulse-button {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 /* Wynik - papierowy efekt */
@@ -640,10 +671,10 @@ input:focus {
     margin: 30px;
     padding: 40px;
     border-radius: 15px;
-    box-shadow: 
-        0 1px 3px rgba(0,0,0,0.12),
-        0 1px 2px rgba(0,0,0,0.24),
-        0 10px 40px rgba(0,0,0,0.1);
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.12),
+        0 1px 2px rgba(0, 0, 0, 0.24),
+        0 10px 40px rgba(0, 0, 0, 0.1);
     position: relative;
 }
 
@@ -710,17 +741,17 @@ input:focus {
     .kolumny {
         grid-template-columns: 1fr;
     }
-    
+
     .sekcja {
         grid-template-columns: 1fr !important;
     }
-    
+
     .compact-mode .obszar-zrzutu {
         grid-column: 1;
         grid-row: auto;
         position: static;
     }
-    
+
     .compact-mode .pole-dodatkowe {
         grid-column: 1;
     }
@@ -730,24 +761,24 @@ input:focus {
     .forma {
         flex-direction: column;
     }
-    
+
     h1 {
         font-size: 1.8em;
     }
-    
+
     .sekcja {
         padding: 20px;
     }
-    
+
     .view-toggle {
         width: 240px;
         height: 50px;
     }
-    
+
     .toggle-icon {
         font-size: 1.5em;
     }
-    
+
     .toggle-option {
         font-size: 0.75em;
     }
@@ -759,6 +790,7 @@ input:focus {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -774,11 +806,11 @@ input:focus {
     body {
         background: white;
     }
-    
+
     .container {
         box-shadow: none;
     }
-    
+
     .dane-ucznia,
     .generuj-sekcja,
     .akcje,
@@ -787,9 +819,57 @@ input:focus {
     .view-toggle-container {
         display: none;
     }
-    
+
     .wynik {
         box-shadow: none;
         page-break-inside: avoid;
     }
+}
+
+/* Ostrzeżenie RODO */
+.rodo-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+    border-left: 5px solid #ff9800;
+    padding: 20px;
+    margin: 20px 30px;
+    border-radius: 12px;
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.15);
+    animation: fadeInWarning 0.5s ease;
+}
+
+@keyframes fadeInWarning {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.rodo-icon {
+    font-size: 2.5em;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.rodo-content h3 {
+    margin: 0 0 8px 0;
+    color: #e65100;
+    font-size: 1.1em;
+}
+
+.rodo-content p {
+    margin: 0;
+    color: #5d4037;
+    line-height: 1.6;
+}
+
+.rodo-content strong {
+    color: #d84315;
 }
