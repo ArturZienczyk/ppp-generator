@@ -1,33 +1,67 @@
 // ==============================================
-// OBSŁUGA TOGGLE WIDOKÓW (Sekcje vs Kompakt)
+// OBSŁUGA TOGGLE WIDOKÓW
+// Desktop: Sekcje vs Kompakt
+// Mobile: Wszystkie rozwinięte vs Accordion (jedna na raz)
 // ==============================================
 
 function inicjalizujToggle() {
     const toggleSwitch = document.getElementById('viewToggle');
     const sekcjeContainer = document.getElementById('sekcje-container');
     const toggleOptions = document.querySelectorAll('.toggle-option');
-    
+
     if (!toggleSwitch) return;
-    
+
+    // Aktualizuj etykiety toggle w zależności od trybu
+    aktualizujEtykietyToggle();
+
     toggleSwitch.addEventListener('click', (e) => {
         const clickedOption = e.target.closest('.toggle-option');
         if (!clickedOption) return;
-        
+
         const view = clickedOption.dataset.view;
-        
+
         // Przełącz aktywną opcję
         toggleOptions.forEach(opt => opt.classList.remove('active'));
         clickedOption.classList.add('active');
-        
-        // Przełącz slider i tryb
-        if (view === 'compact') {
-            toggleSwitch.classList.add('compact-mode');
-            sekcjeContainer.classList.add('compact-mode');
+
+        if (isTouchDevice()) {
+            // MOBILE: Przełącznik accordion
+            if (view === 'compact') {
+                accordionMode = true;
+                sekcjeContainer.classList.add('accordion-mode');
+                zwinWszystkieSekcje();
+            } else {
+                accordionMode = false;
+                sekcjeContainer.classList.remove('accordion-mode');
+                rozwinWszystkieSekcje();
+            }
         } else {
-            toggleSwitch.classList.remove('compact-mode');
-            sekcjeContainer.classList.remove('compact-mode');
+            // DESKTOP: Standardowy przełącznik Sekcje/Kompakt
+            if (view === 'compact') {
+                toggleSwitch.classList.add('compact-mode');
+                sekcjeContainer.classList.add('compact-mode');
+            } else {
+                toggleSwitch.classList.remove('compact-mode');
+                sekcjeContainer.classList.remove('compact-mode');
+            }
         }
     });
+}
+
+// Aktualizuj etykiety toggle w zależności od desktop/mobile
+function aktualizujEtykietyToggle() {
+    const option1 = document.querySelector('[data-view="sections"]');
+    const option2 = document.querySelector('[data-view="compact"]');
+
+    if (isTouchDevice()) {
+        // Mobile: Wszystkie / Jedna na raz
+        option1.innerHTML = '<div class="toggle-icon">📂</div><div>Wszystkie</div>';
+        option2.innerHTML = '<div class="toggle-icon">📋</div><div>Jedna na raz</div>';
+    } else {
+        // Desktop: Sekcje / Kompakt
+        option1.innerHTML = '<div class="toggle-icon">📚</div><div>Sekcje</div>';
+        option2.innerHTML = '<div class="toggle-icon">📊</div><div>Kompakt</div>';
+    }
 }
 
 // ==============================================
@@ -328,10 +362,33 @@ const podpowiedziWiekowe = {
 // Stan aplikacji
 let wybraneOpcje = {};
 let draggedElement = null;
+let accordionMode = false; // Tryb accordion dla mobile
+
+// Wykrywanie urządzenia dotykowego lub małego ekranu
+const isTouchDevice = () => {
+    // Sprawdź fizyczne właściwości touch
+    const hasTouch = (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0));
+
+    // Sprawdź szerokość ekranu (dla symulatorów DevTools)
+    const isSmallScreen = window.innerWidth <= 768;
+
+    return hasTouch || isSmallScreen;
+};
 
 // ==============================================
 // INICJALIZACJA
 // ==============================================
+
+// Funkcja aktualizująca tryb touch
+function aktualizujTrybTouch() {
+    if (isTouchDevice()) {
+        document.body.classList.add('touch-device');
+    } else {
+        document.body.classList.remove('touch-device');
+    }
+}
 
 // Inicjalizacja po załadowaniu strony
 document.addEventListener('DOMContentLoaded', () => {
@@ -339,6 +396,27 @@ document.addEventListener('DOMContentLoaded', () => {
     inicjalizujSekcje();
     podlaczNasluchiwaczeWiek();
     podlaczPrzyciskGeneruj();
+
+    // Dodaj klasę do body dla urządzeń dotykowych
+    aktualizujTrybTouch();
+
+    // Nasłuchuj na zmianę rozmiaru okna (dla symulatorów DevTools)
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            const bylTouchDevice = document.body.classList.contains('touch-device');
+            const jestTouchDevice = isTouchDevice();
+
+            if (bylTouchDevice !== jestTouchDevice) {
+                // Tryb się zmienił - przeładuj sekcje
+                aktualizujTrybTouch();
+                aktualizujEtykietyToggle();
+                document.getElementById('sekcje-container').innerHTML = '';
+                inicjalizujSekcje();
+            }
+        }, 250);
+    });
 });
 
 // ==============================================
@@ -355,8 +433,13 @@ function inicjalizujSekcje() {
         
         const sekcjaDiv = document.createElement('div');
         sekcjaDiv.className = 'sekcja';
+        sekcjaDiv.dataset.sekcja = klucz;
         sekcjaDiv.innerHTML = `
-            <h3>${dane.tytul}</h3>
+            <h3 class="sekcja-naglowek">
+                ${dane.tytul}
+                <span class="accordion-icon">▼</span>
+            </h3>
+            <div class="sekcja-tresc">
             ${dane.opis ? `<p style="color: #666; margin-bottom: 20px; font-style: italic;">/${dane.opis}/</p>` : ''}
             
             <div class="kolumny">
@@ -395,7 +478,10 @@ function inicjalizujSekcje() {
             </div>
             
             <div class="obszar-zrzutu" data-sekcja="${klucz}">
-                <h4>⬇️ Przeciągnij tutaj wybrane obserwacje:</h4>
+                <h4 class="obszar-naglowek">
+                    <span class="desktop-only">⬇️ Przeciągnij tutaj wybrane obserwacje:</span>
+                    <span class="mobile-only">✓ Wybrane obserwacje (kliknij opcję powyżej):</span>
+                </h4>
                 <div class="wybrane-opcje" id="wybrane-${klucz}"></div>
             </div>
             
@@ -405,56 +491,128 @@ function inicjalizujSekcje() {
                     <textarea id="dodatkowe-${klucz}" placeholder="Możesz dodać własne uwagi..."></textarea>
                 </div>
             ` : ''}
+            </div>
         `;
         
         container.appendChild(sekcjaDiv);
     });
-    
+
     podlaczDragAndDrop();
+    podlaczAccordion();
+}
+
+// ==============================================
+// ACCORDION - ZWIJANIE/ROZWIJANIE SEKCJI
+// ==============================================
+
+function podlaczAccordion() {
+    const sekcje = document.querySelectorAll('.sekcja');
+
+    sekcje.forEach(sekcja => {
+        const naglowek = sekcja.querySelector('.sekcja-naglowek');
+
+        naglowek.addEventListener('click', () => {
+            // Tylko na mobile i w trybie accordion
+            if (!isTouchDevice() || !accordionMode) return;
+
+            const jestZwinieta = sekcja.classList.contains('collapsed');
+
+            if (jestZwinieta) {
+                // Rozwiń tę sekcję
+                sekcja.classList.remove('collapsed');
+            } else {
+                // Zwiń tę sekcję
+                sekcja.classList.add('collapsed');
+            }
+        });
+    });
+}
+
+function zwinWszystkieSekcje() {
+    const sekcje = document.querySelectorAll('.sekcja');
+    sekcje.forEach((sekcja, index) => {
+        // Pierwsza sekcja rozwinięta, reszta zwinięte
+        if (index === 0) {
+            sekcja.classList.remove('collapsed');
+        } else {
+            sekcja.classList.add('collapsed');
+        }
+    });
+}
+
+function rozwinWszystkieSekcje() {
+    const sekcje = document.querySelectorAll('.sekcja');
+    sekcje.forEach(sekcja => {
+        sekcja.classList.remove('collapsed');
+    });
 }
 
 // ==============================================
 // DRAG & DROP
 // ==============================================
 
-// Obsługa drag & drop
+// Obsługa drag & drop oraz click dla mobile
 function podlaczDragAndDrop() {
     const opcje = document.querySelectorAll('.opcja');
     const obszary = document.querySelectorAll('.obszar-zrzutu');
-    
+    const isTouch = isTouchDevice();
+
     opcje.forEach(opcja => {
-        opcja.addEventListener('dragstart', (e) => {
-            draggedElement = e.target;
-            e.target.style.opacity = '0.5';
-        });
-        
-        opcja.addEventListener('dragend', (e) => {
-            e.target.style.opacity = '1';
-        });
-    });
-    
-    obszary.forEach(obszar => {
-        obszar.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            obszar.classList.add('drag-over');
-        });
-        
-        obszar.addEventListener('dragleave', () => {
-            obszar.classList.remove('drag-over');
-        });
-        
-        obszar.addEventListener('drop', (e) => {
-            e.preventDefault();
-            obszar.classList.remove('drag-over');
-            
-            if (draggedElement) {
-                const sekcja = obszar.dataset.sekcja;
-                const tekst = draggedElement.dataset.tekst;
-                
+        // Jeśli urządzenie dotykowe - użyj kliknięcia
+        if (isTouch) {
+            opcja.style.cursor = 'pointer';
+            opcja.setAttribute('draggable', 'false');
+
+            opcja.addEventListener('click', (e) => {
+                const sekcja = e.target.closest('.kolumna').parentElement.parentElement.querySelector('.obszar-zrzutu').dataset.sekcja;
+                const tekst = e.target.dataset.tekst;
+
+                // Wizualna animacja kliknięcia
+                e.target.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    e.target.style.transform = '';
+                }, 150);
+
                 dodajWybranaOpcje(sekcja, tekst);
-            }
-        });
+            });
+        } else {
+            // Standardowe drag & drop dla desktop
+            opcja.addEventListener('dragstart', (e) => {
+                draggedElement = e.target;
+                e.target.style.opacity = '0.5';
+            });
+
+            opcja.addEventListener('dragend', (e) => {
+                e.target.style.opacity = '1';
+            });
+        }
     });
+
+    // Drop area tylko dla desktop
+    if (!isTouch) {
+        obszary.forEach(obszar => {
+            obszar.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                obszar.classList.add('drag-over');
+            });
+
+            obszar.addEventListener('dragleave', () => {
+                obszar.classList.remove('drag-over');
+            });
+
+            obszar.addEventListener('drop', (e) => {
+                e.preventDefault();
+                obszar.classList.remove('drag-over');
+
+                if (draggedElement) {
+                    const sekcja = obszar.dataset.sekcja;
+                    const tekst = draggedElement.dataset.tekst;
+
+                    dodajWybranaOpcje(sekcja, tekst);
+                }
+            });
+        });
+    }
 }
 
 // Dodawanie wybranej opcji
