@@ -8,16 +8,72 @@ Generator opinii nauczyciela wychowawcy do Poradni Psychologiczno-Pedagogicznej 
 
 ## ✨ Funkcje (AKTUALNE)
 
-- 📋 **Interaktywny formularz** z drag & drop dla 8 sekcji
-- 🎯 **Dwa tryby wyświetlania**: Sekcje (3 kolumny) i Kompakt (widok porównawczy)
+- 📋 **Interaktywny formularz** dla 8 sekcji PPP
+- 🖱️ **Inteligentne przełączanie interakcji**:
+  - 3 kolumny obok siebie → Drag & Drop ⤢
+  - Kolumny pionowo → Click-to-add 👆
+  - Automatyczne wykrywanie layoutu
+- 🎯 **Dwa tryby wyświetlania**:
+  - **Desktop**: Sekcje (3 kolumny) ↔ Kompakt (widok porównawczy)
+  - **Mobile**: Wszystkie rozwinięte ↔ Accordion (jedna na raz)
+- 📂 **Accordion na mobile**: Zwijanie/rozwijanie sekcji dla łatwiejszego wypełniania
 - 🤖 **AI-powered**: Generowanie opinii przez Google Gemini 2.5 Pro
 - 💡 **Podpowiedzi kontekstowe**: Wskazówki rozwojowe zależne od wieku dziecka (6-18 lat)
 - ⚖️ **Balans trudności/mocnych stron**: Przypomnienia o holistycznym spojrzeniu na dziecko
 - 🔒 **Ostrzeżenie RODO**: Przypomnienie o nie używaniu prawdziwych danych
-- 📱 **Responsywny design**: Działa na komputerach i tabletach
+- 📱 **Pełna responsywność**:
+  - Desktop → drag & drop w trybie Sekcje, click w Kompakt
+  - Tablet → automatyczne przełączanie na click
+  - Mobile → touch-friendly click + accordion
 - 📋 **Kopiuj do schowka** i 🖨️ **Drukuj** - gotowa opinia
 - ☁️ **Cloud Functions**: Backend w Google Cloud (europe-west4)
 - 🚀 **Vercel**: Automatyczny deploy z GitHub
+
+---
+
+## 🖱️ System Interakcji
+
+Generator **automatycznie dostosowuje** sposób wybierania opcji do layoutu ekranu:
+
+### **Desktop - Tryb "Sekcje"** (3 kolumny obok siebie)
+```
+┌─────────────┬─────────────┬─────────────┐
+│ 🔴 Trudności│ ⚪ Neutralne│ 🟢 Mocne    │
+└─────────────┴─────────────┴─────────────┘
+         ↓ PRZECIĄGNIJ I UPUŚĆ ⤢
+    ┌──────────────────────────────┐
+    │ ⬇️ Strefa zrzutu (blisko!)   │
+    └──────────────────────────────┘
+```
+→ **Drag & Drop** - wygodne, bo strefa zrzutu blisko
+
+### **Desktop - Tryb "Kompakt"** (kolumny jedna nad drugą)
+```
+┌─────────────────────────────────┐
+│ 🔴 Trudności                     │
+├─────────────────────────────────┤
+│ ⚪ Neutralne                     │
+├─────────────────────────────────┤
+│ 🟢 Mocne                         │
+└─────────────────────────────────┘
+         👆 KLIKNIJ OPCJĘ
+    ┌──────────────────────────────┐
+    │ ✓ Wybrane (daleko na dole)   │
+    └──────────────────────────────┘
+```
+→ **Click-to-add** - łatwiejsze niż przeciąganie z góry na dół
+
+### **Mobile/Tablet** (zawsze pionowo)
+```
+📱 Touch device
+    👆 KLIKNIJ OPCJĘ
+    ✓ Wybrane pojawia się pod sekcją
+
+🎛️ Toggle: 📂 Wszystkie ↔ 📋 Jedna na raz (accordion)
+```
+→ **Click-to-add** + większe przyciski dla palca
+
+**Wszystko dzieje się automatycznie!** Nie musisz nic konfigurować - aplikacja wykrywa layout i przełącza tryb. 🎯
 
 ---
 
@@ -130,10 +186,15 @@ ppp-generator/
 - **Flask** + **Flask-CORS** (localhost only)
 
 ### Frontend
-- **HTML5** + **CSS3** (Flexbox, Grid)
+- **HTML5** + **CSS3** (Flexbox, Grid, Media Queries)
 - **Vanilla JavaScript** (ES6+)
-- **Drag & Drop API**
+- **Inteligentne wykrywanie layoutu**:
+  - `getComputedStyle()` - analiza CSS grid
+  - Touch detection API
+  - Dynamic event binding
+- **Drag & Drop API** + **Click events** (auto-switching)
 - **Fetch API** (połączenie z backend)
+- **Accordion pattern** dla mobile UX
 
 ### DevOps
 - **Git** + **GitHub** (wersjonowanie)
@@ -255,11 +316,11 @@ Twój styl: ${profilNauczyciela.styl.join(", ")}.
 
 ## 📊 Metryki Projektu
 
-- **Czas realizacji:** ~12 godzin (zamiast planowanych 1-2h) 😅
-- **Tokeny AI:** ~101k / 190k użytych
-- **Liczba commitów:** ~15+
-- **Pliki:** 8 głównych
-- **Linie kodu:** ~1200+
+- **Czas realizacji:** ~15+ godzin (MVP + mobile UX)
+- **Tokeny AI:** ~100k+ użytych (Claude Code)
+- **Liczba commitów:** ~20+
+- **Pliki:** 9 głównych (+ CLAUDE.md)
+- **Linie kodu:** ~1400+ (JS + CSS + Python)
 
 ---
 
