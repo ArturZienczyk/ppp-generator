@@ -800,6 +800,29 @@ body.touch-device .desktop-only {
     display: none;
 }
 
+/* Drag&drop vs Click-only tekst */
+body.drag-drop-mode .click-text {
+    display: none;
+}
+
+body.drag-drop-mode .drag-drop-text {
+    display: inline;
+}
+
+body.click-only-mode .drag-drop-text {
+    display: none;
+}
+
+body.click-only-mode .click-text {
+    display: inline;
+}
+
+/* Domyślnie ukryj oba (dopóki JS nie ustawi trybu) */
+body:not(.drag-drop-mode):not(.click-only-mode) .drag-drop-text,
+body:not(.drag-drop-mode):not(.click-only-mode) .click-text {
+    display: none;
+}
+
 /* Touch device - lepsze wsparcie dla kliknięć */
 body.touch-device .opcja {
     cursor: pointer;

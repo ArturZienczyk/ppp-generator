@@ -45,6 +45,12 @@ function inicjalizujToggle() {
                 sekcjeContainer.classList.remove('compact-mode');
             }
         }
+
+        // Po zmianie widoku, odśwież interakcje drag&drop/click
+        // (bo layout kolumn się zmienił: 3 obok → pionowo lub odwrotnie)
+        setTimeout(() => {
+            odswiezInterakcje();
+        }, 100); // Czekamy aż CSS się zastosuje
     });
 }
 
@@ -377,6 +383,20 @@ const isTouchDevice = () => {
     return hasTouch || isSmallScreen;
 };
 
+// Wykrywanie czy kolumny są poziomo (3 obok siebie) czy pionowo (jedna nad drugą)
+const czyKolumnyPoziomo = () => {
+    const kolumny = document.querySelector('.kolumny');
+    if (!kolumny) return false;
+
+    const style = window.getComputedStyle(kolumny);
+    const gridColumns = style.gridTemplateColumns;
+
+    // Sprawdź ile kolumn w gridzie (np. "1fr 1fr 1fr" = 3 kolumny, "1fr" = 1 kolumna)
+    const iloscKolumn = gridColumns.split(' ').filter(val => val.trim() !== '').length;
+
+    return iloscKolumn === 3; // true = kolumny poziomo (drag&drop), false = pionowo (click)
+};
+
 // ==============================================
 // INICJALIZACJA
 // ==============================================
@@ -400,23 +420,45 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dodaj klasę do body dla urządzeń dotykowych
     aktualizujTrybTouch();
 
-    // Nasłuchuj na zmianę rozmiaru okna (dla symulatorów DevTools)
+    // Nasłuchuj na zmianę rozmiaru okna (dla symulatorów DevTools i resize)
     let resizeTimer;
+    let poprzedniaTouchDetection = isTouchDevice();
+    let poprzedniaLayoutDetection = false; // będzie ustawione po inicjalizacji
+
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-            const bylTouchDevice = document.body.classList.contains('touch-device');
+            const bylTouchDevice = poprzedniaTouchDetection;
             const jestTouchDevice = isTouchDevice();
 
-            if (bylTouchDevice !== jestTouchDevice) {
-                // Tryb się zmienił - przeładuj sekcje
+            // Sprawdź czy zmienił się layout kolumn (3 obok → pionowo lub odwrotnie)
+            const bylLayout = poprzedniaLayoutDetection;
+            const jestLayout = czyKolumnyPoziomo();
+
+            const zmianaTrybuTouch = (bylTouchDevice !== jestTouchDevice);
+            const zmianaLayoutu = (bylLayout !== jestLayout);
+
+            if (zmianaTrybuTouch) {
+                // Zmiana touch device - przeładuj wszystko
                 aktualizujTrybTouch();
                 aktualizujEtykietyToggle();
                 document.getElementById('sekcje-container').innerHTML = '';
                 inicjalizujSekcje();
+                poprzedniaTouchDetection = jestTouchDevice;
+                poprzedniaLayoutDetection = czyKolumnyPoziomo();
+            } else if (zmianaLayoutu) {
+                // Zmiana layoutu kolumn - odśwież tylko interakcje
+                odswiezInterakcje();
+                poprzedniaLayoutDetection = jestLayout;
+                console.log(`🔄 Layout zmieniony: Kolumny poziomo=${jestLayout}`);
             }
         }, 250);
     });
+
+    // Zapisz początkowy stan layoutu
+    setTimeout(() => {
+        poprzedniaLayoutDetection = czyKolumnyPoziomo();
+    }, 300);
 });
 
 // ==============================================
@@ -479,8 +521,8 @@ function inicjalizujSekcje() {
             
             <div class="obszar-zrzutu" data-sekcja="${klucz}">
                 <h4 class="obszar-naglowek">
-                    <span class="desktop-only">⬇️ Przeciągnij tutaj wybrane obserwacje:</span>
-                    <span class="mobile-only">✓ Wybrane obserwacje (kliknij opcję powyżej):</span>
+                    <span class="drag-drop-text">⬇️ Przeciągnij tutaj wybrane obserwacje:</span>
+                    <span class="click-text">✓ Wybrane obserwacje (kliknij opcję powyżej):</span>
                 </h4>
                 <div class="wybrane-opcje" id="wybrane-${klucz}"></div>
             </div>
@@ -499,6 +541,20 @@ function inicjalizujSekcje() {
 
     podlaczDragAndDrop();
     podlaczAccordion();
+    aktualizujTrybInterakcji();
+}
+
+// Aktualizuj tryb interakcji (drag&drop vs click) i wyświetlane teksty
+function aktualizujTrybInterakcji() {
+    const kolumnyPoziomo = czyKolumnyPoziomo();
+
+    if (kolumnyPoziomo) {
+        document.body.classList.add('drag-drop-mode');
+        document.body.classList.remove('click-only-mode');
+    } else {
+        document.body.classList.remove('drag-drop-mode');
+        document.body.classList.add('click-only-mode');
+    }
 }
 
 // ==============================================
@@ -551,20 +607,57 @@ function rozwinWszystkieSekcje() {
 // DRAG & DROP
 // ==============================================
 
-// Obsługa drag & drop oraz click dla mobile
+// Odświeżenie interakcji bez utraty danych
+function odswiezInterakcje() {
+    // Zapisz aktualny stan wybranych opcji i dodatkowe teksty
+    const zapisaneOpcje = JSON.parse(JSON.stringify(wybraneOpcje));
+    const zapisaneDodatkowe = {};
+
+    Object.keys(daneSekcji).forEach(klucz => {
+        const pole = document.getElementById(`dodatkowe-${klucz}`);
+        if (pole) {
+            zapisaneDodatkowe[klucz] = pole.value;
+        }
+    });
+
+    // Przeładuj sekcje
+    document.getElementById('sekcje-container').innerHTML = '';
+    inicjalizujSekcje();
+
+    // Przywróć zapisane dane
+    Object.keys(zapisaneOpcje).forEach(klucz => {
+        zapisaneOpcje[klucz].opcje.forEach(tekst => {
+            dodajWybranaOpcje(klucz, tekst);
+        });
+
+        // Przywróć dodatkowe teksty
+        if (zapisaneDodatkowe[klucz]) {
+            const pole = document.getElementById(`dodatkowe-${klucz}`);
+            if (pole) {
+                pole.value = zapisaneDodatkowe[klucz];
+                wybraneOpcje[klucz].dodatkowe = zapisaneDodatkowe[klucz];
+            }
+        }
+    });
+}
+
+// Obsługa drag & drop oraz click
 function podlaczDragAndDrop() {
     const opcje = document.querySelectorAll('.opcja');
     const obszary = document.querySelectorAll('.obszar-zrzutu');
-    const isTouch = isTouchDevice();
+
+    // Decyzja: drag&drop TYLKO gdy kolumny poziomo (3 obok siebie)
+    const kolumnyPoziomo = czyKolumnyPoziomo();
+    const useDragDrop = kolumnyPoziomo;
 
     opcje.forEach(opcja => {
-        // Jeśli urządzenie dotykowe - użyj kliknięcia
-        if (isTouch) {
+        if (!useDragDrop) {
+            // TRYB CLICK-ONLY (kolumny pionowo)
             opcja.style.cursor = 'pointer';
             opcja.setAttribute('draggable', 'false');
 
             opcja.addEventListener('click', (e) => {
-                const sekcja = e.target.closest('.kolumna').parentElement.parentElement.querySelector('.obszar-zrzutu').dataset.sekcja;
+                const sekcja = e.target.closest('.sekcja').dataset.sekcja;
                 const tekst = e.target.dataset.tekst;
 
                 // Wizualna animacja kliknięcia
@@ -576,7 +669,10 @@ function podlaczDragAndDrop() {
                 dodajWybranaOpcje(sekcja, tekst);
             });
         } else {
-            // Standardowe drag & drop dla desktop
+            // TRYB DRAG & DROP (kolumny poziomo - 3 obok siebie)
+            opcja.style.cursor = 'move';
+            opcja.setAttribute('draggable', 'true');
+
             opcja.addEventListener('dragstart', (e) => {
                 draggedElement = e.target;
                 e.target.style.opacity = '0.5';
@@ -588,8 +684,8 @@ function podlaczDragAndDrop() {
         }
     });
 
-    // Drop area tylko dla desktop
-    if (!isTouch) {
+    // Drop area tylko dla drag&drop
+    if (useDragDrop) {
         obszary.forEach(obszar => {
             obszar.addEventListener('dragover', (e) => {
                 e.preventDefault();
