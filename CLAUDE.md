@@ -57,6 +57,16 @@ Gemini 2.5 Pro Model
 
 ## Development Commands
 
+### Install Dependencies
+
+```bash
+# Cloud Function deps (main.py)
+pip install functions-framework google-cloud-aiplatform flask-cors
+
+# Local dev server deps (app.py)
+pip install flask requests
+```
+
 ### Local Development
 
 ```bash
@@ -161,40 +171,7 @@ When testing, be aware:
 - Endpoint in app.py (line 9) points to Cloud Run URL for dev proxy
 - Response format: `{ "success": true, "opinia": "..." }` or `{ "success": false, "error": "..." }`
 
-## Future Development Ideas (from README)
-
-**Priority 1: Teacher Profile**
-- Allow teacher to define their "voice" (experience level, writing style, opinion length)
-- Store profile in localStorage
-- Customize prompt based on profile
-
-**Priority 2: Print-ready Format**
-- Match official PPP document layout
-- Blank fields for manual completion
-- Header/footer with school logo, signature area
-- Print-specific CSS (`@media print`)
-
 ## Znane problemy do uporządkowania
-
-### Historia rozwoju projektu
-
-Projekt powstał z **połączenia dwóch równoległych czatów**:
-
-**Czat 1: Architektura Google Cloud**
-- ✅ Zbudował solidną infrastrukturę (Cloud Functions, Vertex AI)
-- ❌ Nie miał pełnych danych o strukturze formularza PPP
-- ❌ Ton odpowiedzi AI był dobry, ale nie pasował do wymogów dokumentu
-
-**Czat 2: Rozwiązanie webowe**
-- ✅ Miał pełną strukturę dokumentu PPP (8 sekcji)
-- ✅ Generowany tekst pasował do formularza
-- ❌ Nie wykorzystywał potencjału narzędzi Google Cloud
-- ❌ Generalnie nie działał z architekturą chmurową
-
-**Czat 3-4: Scalenie**
-- Połączono architekturę z czatu 1 ze strukturą z czatu 2
-- Stąd chaos z regionami (us-central1 dla Vertex AI, europe-west4 dla Cloud Function)
-- **Aktualna wersja działa poprawnie**, ale kod ma historyczne artefakty
 
 ### Problem: Mobile UX (drag & drop)
 
