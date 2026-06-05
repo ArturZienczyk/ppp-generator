@@ -106,19 +106,27 @@ label {
     font-size: 0.95em;
 }
 
-input {
+input,
+select {
     width: 100%;
     padding: 12px 15px;
     border: 2px solid #e0e0e0;
     border-radius: 10px;
     font-size: 1em;
     transition: all 0.3s ease;
+    background: white;
 }
 
-input:focus {
+input:focus,
+select:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.pole-szablon {
+    flex-basis: 100%;
+    min-width: 280px;
 }
 
 /* PREMIUM TOGGLE SWITCH */
@@ -931,29 +939,185 @@ body.touch-device .opcje-lista {
     animation: fadeIn 0.5s ease;
 }
 
+/* Formularz poradni — domyślnie ukryty na ekranie, widoczny tylko przy druku */
+.formularz-poradni {
+    display: none;
+}
+
 /* Wydruk */
 @media print {
     body {
         background: white;
+        font-family: 'Times New Roman', Times, serif;
+        color: #000;
     }
 
     .container {
         box-shadow: none;
+        padding: 0;
+        margin: 0;
+        max-width: none;
     }
 
-    .dane-ucznia,
-    .generuj-sekcja,
-    .akcje,
+    /* Ukryj cały interfejs aplikacji */
     header,
-    .sekcja,
-    .view-toggle-container {
-        display: none;
+    .rodo-warning,
+    .dane-ucznia,
+    .podpowiedz-wiek,
+    #sekcje-container,
+    .generuj-sekcja,
+    .wynik,
+    .view-toggle-container,
+    .sekcja {
+        display: none !important;
     }
 
-    .wynik {
-        box-shadow: none;
+    /* Pokaż tylko formularz poradni — layout 1:1 z oryginalnym papierowym drukiem */
+    .formularz-poradni {
+        display: block;
+        font-size: 10pt;
+        line-height: 1.5em;
+        color: #000;
+        padding: 0;
+    }
+
+    @page {
+        size: A4;
+        margin: 1.3cm 1.5cm 1cm 1.5cm;
+    }
+
+    /* Nagłówek strony: "Pieczęć szkoły" po lewej, "Łódź ......" po prawej (od ~55% szerokości) */
+    .fp-naglowek-strony {
+        display: flex;
+        align-items: baseline;
+        margin-bottom: 0.4em;
+        font-size: 10pt;
+    }
+
+    .fp-pieczec { flex-shrink: 0; }
+
+    .fp-miasto-data {
+        margin-left: auto;
+        width: 35%;
+        display: flex;
+        align-items: baseline;
+        gap: 0.4em;
+    }
+
+    .fp-kropki-data,
+    .fp-kropki-pole {
+        flex: 1;
+        align-self: end;
+        height: 1em;
+        background-image: radial-gradient(circle, #000 0.5px, transparent 0.7px);
+        background-size: 3.5px 100%;
+        background-repeat: repeat-x;
+        background-position: 0 bottom;
+    }
+
+    /* Tytuł */
+    .fp-tytul {
+        text-align: center;
+        font-size: 12pt;
+        font-weight: bold;
+        margin: 0.6em 0 0.1em;
+    }
+
+    .fp-cel {
+        text-align: center;
+        font-size: 10pt;
+        font-weight: normal;
+        margin: 0;
+    }
+
+    .fp-adres {
+        text-align: center;
+        font-size: 10pt;
+        margin: 0 0 1em;
+    }
+
+    /* Pola osobowe — etykieta + linia kropek do ręcznego wpisania */
+    .fp-pola-osobowe {
+        margin-bottom: 0.3em;
+    }
+
+    .fp-pole-osobowe {
+        display: flex;
+        align-items: baseline;
+        gap: 0.4em;
+        margin-bottom: 0.1em;
+        page-break-inside: avoid;
+        font-size: 10pt;
+    }
+
+    .fp-etykieta { flex-shrink: 0; }
+
+    /* fp-kropki-pole zdefiniowane razem z fp-kropki-data wyżej */
+
+    /* Sekcje */
+    .fp-sekcje { margin-top: 0.3em; }
+
+    .fp-sekcja {
+        margin-bottom: 0.3em;
         page-break-inside: avoid;
     }
+
+    /* Wymuszony page-break — gwarantuje że strona 2 startuje od konkretnej sekcji */
+    .fp-sekcja--break {
+        page-break-before: always;
+        break-before: page;
+    }
+
+    .fp-sekcja-tytul {
+        font-weight: bold;
+        font-size: 10pt;
+        margin: 0 0 0.1em;
+        line-height: 1.2;
+    }
+
+    /* Slot z kratką liniową — N rzeczywistych divów z dotted bottom (gwarantuje
+       pixel-perfect kropkowane linie poziome), tekst opinii NA tych liniach jak
+       na maszynie do pisania. */
+    .fp-slot {
+        position: relative;
+        line-height: 1.25em;
+    }
+
+    .fp-linie-tlo {
+        display: block;
+    }
+
+    .fp-linia-pusta {
+        height: 1.25em;
+        border-bottom: 1px dotted #000;
+    }
+
+    .fp-tresc {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        font-size: 9.5pt;
+        line-height: 1.25em;
+        white-space: pre-wrap;
+        text-align: justify;
+        /* Białe tło zakrywa kropki pod tekstem — kropki widoczne TYLKO na pustych liniach */
+        background: white;
+    }
+
+    /* Podpisy: dwie etykiety na samym dole strony */
+    .fp-podpisy {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5em;
+        font-weight: bold;
+        font-size: 10pt;
+        page-break-inside: avoid;
+    }
+
+    .fp-podpis-etykieta { flex: 1; }
+    .fp-podpis-etykieta:last-child { text-align: right; }
 }
 
 /* Ostrzeżenie RODO */

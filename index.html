@@ -38,6 +38,24 @@
                     <label for="klasa">Klasa:</label>
                     <input type="text" id="klasa" placeholder="np. 4a">
                 </div>
+                <div class="pole pole-szablon">
+                    <label for="szablon-poradni">Szablon poradni (wydruk):</label>
+                    <select id="szablon-poradni">
+                        <optgroup label="Łódź — poradnie rejonowe">
+                            <option value="lodz_pp1">Poradnia nr 1 — Łódź (Hipoteczna 3/5)</option>
+                            <option value="lodz_pp2">Poradnia nr 2 — Łódź (Bałuty, Motylowa 3)</option>
+                            <option value="lodz_pp3">Poradnia nr 3 — Łódź (Śródmieście, Dowborczyków 5)</option>
+                            <option value="lodz_pp4" selected>Poradnia nr 4 — Łódź (Widzew, Piłsudskiego 101)</option>
+                            <option value="lodz_pp5">Poradnia nr 5 — Łódź (Polesie, Praussa 2)</option>
+                            <option value="lodz_pp6">Poradnia nr 6 — Łódź (Górna, Rzgowska 25)</option>
+                        </optgroup>
+                        <optgroup label="Łódź — poradnie specjalistyczne">
+                            <option value="lodz_spwrit">Wspierania Rozwoju i Terapii (Hipoteczna 3/5)</option>
+                            <option value="lodz_pppdm">Dla Młodzieży (Wyszyńskiego 86)</option>
+                            <option value="lodz_spppdz">Doradztwa Zawodowego (Wyszyńskiego 86)</option>
+                        </optgroup>
+                    </select>
+                </div>
             </form>
 
             <!-- PREMIUM TOGGLE SWITCH -->
@@ -79,9 +97,12 @@
             <div id="wynik-opinia"></div>
             <div class="akcje">
                 <button id="kopiuj-btn">📋 Kopiuj do schowka</button>
-                <button id="drukuj-btn">🖨️ Drukuj</button>
+                <button id="drukuj-btn">🖨️ Drukuj formularz</button>
             </div>
         </div>
+
+        <!-- Formularz poradni (print-only) -->
+        <div class="formularz-poradni" id="formularz-poradni" aria-hidden="true"></div>
     </div>
 
     <script src="script.js"></script>

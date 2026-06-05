@@ -1,4 +1,120 @@
 // ==============================================
+// SZABLONY PORADNI (do wydruku formularza)
+// ==============================================
+
+// Wspólny zestaw pól osobowych i sekcji (standardowy druk miejski Łodzi)
+const POLA_OSOBOWE_STD = [
+    'Imię i nazwisko ucznia',
+    'Adres zamieszkania',
+    'Data i miejsce urodzenia',
+    'Imiona i nazwiska rodziców lub opiekunów',
+    'Szkoła Podstawowa nr ___ kl. ___'
+];
+
+// Liczba linii (kratek) per sekcja zgodnie z oryginalnym papierowym drukiem PP nr 4
+const SEKCJE_STD = [
+    { id: 'powod', linie: 6, naglowek: 'Powód zgłoszenia  / podać, jakie występują trudności i od kiedy /' },
+    { id: 'sek1', linie: 5, naglowek: '1. Sytuacja domowa ucznia / warunki materialne, atmosfera życia rodzinnego, postawa rodziców wobec dziecka, metody wychowawcze rodziców, stosunek rodziców do szkoły i nauki dziecka itp.' },
+    { id: 'sek2', linie: 6, naglowek: '2. Postępy ucznia w nauce / aktualne wyniki w nauce, przedmioty sprawiające trudności, przedmioty, z których uzyskuje dobre oceny, czy powtarzał klasy, które i dlaczego? /' },
+    { id: 'sek3', linie: 9, naglowek: '3. Opinia nauczyciela o sprawności intelektualnej ucznia / myślenie, uwaga, pamięć, sposób wypowiadania się /' },
+    { id: 'sek4', linie: 8, naglowek: '4. Stosunek ucznia do nauki, szkoły, niepowodzeń szkolnych', breakBefore: true },
+    { id: 'sek5', linie: 10, naglowek: '5. Zachowanie ucznia w szkole / cechy charakteru i usposobienie, uspołecznienie, stosunek do rówieśników, nauczycieli, występujące trudności wychowawcze /' },
+    { id: 'sek6', linie: 7, naglowek: '6. Stan zdrowia i wygląd dziecka' },
+    { id: 'sek7', linie: 8, naglowek: '7. Jakiej pomocy udzielała szkoła w celu przezwyciężenia występujących trudności?' },
+    { id: 'sek8', linie: 12, naglowek: '8. Inne informacje' }
+];
+
+const PODPISY_STD = ['PODPIS DYREKTORA', 'PODPIS WYCHOWAWCY'];
+
+// Dane poradni zweryfikowane: D:/Projects/research-notes/poradnie-pp-lodz-2026-05-11_iter.json
+// (haiku-researcher-grounded + iter_loop, semantic_failures 0%, 2026-05-11)
+const szablonyPoradni = {
+    'lodz_pp1': {
+        nazwa: 'Poradnia nr 1 — Łódź',
+        miasto: 'Łódź',
+        tytul: 'ZGŁOSZENIE UCZNIA KL. IV – VIII Szkoły Podstawowej',
+        celInstytucji: 'Do Poradni Psychologiczno – Pedagogicznej nr 1',
+        adresPoradni: 'ul. Hipoteczna 3/5, 91-335 Łódź',
+        telefonPoradni: 'tel. 690 418 676; 42 651 49 72  •  kontakt@ppp1.elodz.edu.pl',
+        polaOsobowe: POLA_OSOBOWE_STD, sekcje: SEKCJE_STD, podpisy: PODPISY_STD
+    },
+    'lodz_pp2': {
+        nazwa: 'Poradnia nr 2 — Łódź (Bałuty)',
+        miasto: 'Łódź',
+        tytul: 'ZGŁOSZENIE UCZNIA KL. IV – VIII Szkoły Podstawowej',
+        celInstytucji: 'Do Poradni Psychologiczno – Pedagogicznej nr 2',
+        adresPoradni: 'ul. Motylowa 3, 91-362 Łódź',
+        telefonPoradni: 'tel. 42 659 15 81  •  kontakt@ppp2.elodz.edu.pl',
+        polaOsobowe: POLA_OSOBOWE_STD, sekcje: SEKCJE_STD, podpisy: PODPISY_STD
+    },
+    'lodz_pp3': {
+        nazwa: 'Poradnia nr 3 — Łódź (Śródmieście)',
+        miasto: 'Łódź',
+        tytul: 'ZGŁOSZENIE UCZNIA KL. IV – VIII Szkoły Podstawowej',
+        celInstytucji: 'Do Poradni Psychologiczno – Pedagogicznej nr 3',
+        adresPoradni: 'ul. Dowborczyków 5, 90-019 Łódź',
+        telefonPoradni: 'tel. 42 676 73 05  •  fax 42 676 73 04  •  kontakt@ppp3.elodz.edu.pl',
+        polaOsobowe: POLA_OSOBOWE_STD, sekcje: SEKCJE_STD, podpisy: PODPISY_STD
+    },
+    'lodz_pp4': {
+        nazwa: 'Poradnia nr 4 — Łódź (Widzew)',
+        miasto: 'Łódź',
+        tytul: 'ZGŁOSZENIE UCZNIA KL. IV – VIII Szkoły Podstawowej',
+        celInstytucji: 'Do Poradni Psychologiczno – Pedagogicznej nr 4',
+        adresPoradni: 'al. Piłsudskiego 101, 92-332 Łódź',
+        telefonPoradni: 'tel/fax 42 674 45 88; 42 674 59 73  •  kom. 530 622 874  •  kontakt@ppp4.elodz.edu.pl',
+        polaOsobowe: POLA_OSOBOWE_STD, sekcje: SEKCJE_STD, podpisy: PODPISY_STD
+    },
+    'lodz_pp5': {
+        nazwa: 'Poradnia nr 5 — Łódź (Polesie)',
+        miasto: 'Łódź',
+        tytul: 'ZGŁOSZENIE UCZNIA KL. IV – VIII Szkoły Podstawowej',
+        celInstytucji: 'Do Poradni Psychologiczno – Pedagogicznej nr 5',
+        adresPoradni: 'ul. Ksawerego Praussa 2, 94-203 Łódź',
+        telefonPoradni: 'tel. 42 637 16 08  •  sekretariat@ppp5.elodz.edu.pl',
+        polaOsobowe: POLA_OSOBOWE_STD, sekcje: SEKCJE_STD, podpisy: PODPISY_STD
+    },
+    'lodz_pp6': {
+        nazwa: 'Poradnia nr 6 — Łódź (Górna)',
+        miasto: 'Łódź',
+        tytul: 'ZGŁOSZENIE UCZNIA KL. IV – VIII Szkoły Podstawowej',
+        celInstytucji: 'Do Poradni Psychologiczno – Pedagogicznej nr 6',
+        adresPoradni: 'ul. Rzgowska 25, 93-008 Łódź',
+        telefonPoradni: 'tel. 42 681 92 82  •  kontakt@ppp6.elodz.edu.pl',
+        polaOsobowe: POLA_OSOBOWE_STD, sekcje: SEKCJE_STD, podpisy: PODPISY_STD
+    },
+    'lodz_spwrit': {
+        nazwa: 'Specjalistyczna Poradnia Wspierania Rozwoju i Terapii — Łódź',
+        miasto: 'Łódź',
+        tytul: 'ZGŁOSZENIE DZIECKA / UCZNIA',
+        celInstytucji: 'Do Specjalistycznej Poradni Psychologiczno – Pedagogicznej Wspierania Rozwoju i Terapii',
+        adresPoradni: 'ul. Hipoteczna 3/5, 91-335 Łódź',
+        telefonPoradni: 'tel. 42 653 76 75  •  kontakt@spwrit.elodz.edu.pl',
+        polaOsobowe: POLA_OSOBOWE_STD, sekcje: SEKCJE_STD, podpisy: PODPISY_STD
+    },
+    'lodz_pppdm': {
+        nazwa: 'Specjalistyczna Poradnia dla Młodzieży — Łódź',
+        miasto: 'Łódź',
+        tytul: 'ZGŁOSZENIE UCZNIA SZKOŁY PONADPODSTAWOWEJ',
+        celInstytucji: 'Do Specjalistycznej Poradni Psychologiczno – Pedagogicznej dla Młodzieży',
+        adresPoradni: 'al. ks. kard. S. Wyszyńskiego 86, 94-050 Łódź',
+        telefonPoradni: 'tel. 42 688 16 68; 42 688 15 39  •  kontakt@pppdm.edu.lodz.pl',
+        polaOsobowe: POLA_OSOBOWE_STD, sekcje: SEKCJE_STD, podpisy: PODPISY_STD
+    },
+    'lodz_spppdz': {
+        nazwa: 'Specjalistyczna Poradnia Doradztwa Zawodowego — Łódź',
+        miasto: 'Łódź',
+        tytul: 'ZGŁOSZENIE UCZNIA — DORADZTWO ZAWODOWE',
+        celInstytucji: 'Do Specjalistycznej Poradni Psychologiczno – Pedagogicznej Doradztwa Zawodowego i dla Dzieci z Wadami Rozwojowymi',
+        adresPoradni: 'al. ks. kard. S. Wyszyńskiego 86, 94-050 Łódź',
+        telefonPoradni: 'tel. 42 688 20 70; 42 688 21 62  •  sekretariat@spppdz.elodz.edu.pl',
+        polaOsobowe: POLA_OSOBOWE_STD, sekcje: SEKCJE_STD, podpisy: PODPISY_STD
+    }
+};
+
+let aktywnySzablon = 'lodz_pp4';
+
+// ==============================================
 // OBSŁUGA TOGGLE WIDOKÓW
 // Desktop: Sekcje vs Kompakt
 // Mobile: Wszystkie rozwinięte vs Accordion (jedna na raz)
@@ -416,6 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
     inicjalizujSekcje();
     podlaczNasluchiwaczeWiek();
     podlaczPrzyciskGeneruj();
+    podlaczDropdownSzablonu();
 
     // Dodaj klasę do body dla urządzeń dotykowych
     aktualizujTrybTouch();
@@ -890,8 +1007,117 @@ async function wywolajAI(imie, wiek, klasa) {
 function wyswietlOpinie(opinia) {
     const container = document.getElementById('wynik-container');
     const wynikop = document.getElementById('wynik-opinia');
-    
+
     wynikop.textContent = opinia;
+    renderFormularz(opinia);
     container.classList.remove('hidden');
     container.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ==============================================
+// FORMULARZ PORADNI (print-only)
+// ==============================================
+
+// Wzorce nagłówków sekcji (tolerują drobne wariacje formatowania)
+const WZORCE_SEKCJI = [
+    { id: 'powod', regex: /Powód zgłoszenia[^\n]*?:?\s*\n/i },
+    { id: 'sek1',  regex: /^\s*1[\.\)]\s*Sytuacja domowa[^\n]*?:?\s*\n/im },
+    { id: 'sek2',  regex: /^\s*2[\.\)]\s*Postępy[^\n]*?:?\s*\n/im },
+    { id: 'sek3',  regex: /^\s*3[\.\)]\s*Opinia nauczyciela[^\n]*?:?\s*\n/im },
+    { id: 'sek4',  regex: /^\s*4[\.\)]\s*Stosunek[^\n]*?:?\s*\n/im },
+    { id: 'sek5',  regex: /^\s*5[\.\)]\s*Zachowanie[^\n]*?:?\s*\n/im },
+    { id: 'sek6',  regex: /^\s*6[\.\)]\s*Stan zdrowia[^\n]*?:?\s*\n/im },
+    { id: 'sek7',  regex: /^\s*7[\.\)]\s*Jakiej pomocy[^\n]*?:?\s*\n/im },
+    { id: 'sek8',  regex: /^\s*8[\.\)]\s*Inne informacje[^\n]*?:?\s*\n/im }
+];
+
+function parsujOpinie(tekst, tpl) {
+    const result = {};
+    tpl.sekcje.forEach(s => result[s.id] = '');
+
+    const tekstZNowymi = tekst.endsWith('\n') ? tekst : tekst + '\n';
+
+    const pozycje = WZORCE_SEKCJI.map(w => {
+        const m = tekstZNowymi.match(w.regex);
+        return m ? { id: w.id, start: m.index, len: m[0].length } : null;
+    }).filter(p => p !== null).sort((a, b) => a.start - b.start);
+
+    if (pozycje.length === 0) {
+        result[tpl.sekcje[0].id] = tekst.trim();
+        console.warn('[Formularz] Parser nie znalazł nagłówków sekcji — wstawiam całość do pierwszej sekcji');
+        return result;
+    }
+
+    pozycje.forEach((poz, i) => {
+        const start = poz.start + poz.len;
+        const end = i + 1 < pozycje.length ? pozycje[i + 1].start : tekstZNowymi.length;
+        // Collapse multiple newlines do jednej spacji — żeby puste linie od AI
+        // nie rozdmuchiwały slotu kropek poza jego wysokość
+        result[poz.id] = tekstZNowymi.substring(start, end).trim().replace(/\n\s*\n/g, ' ').replace(/\n/g, ' ').replace(/  +/g, ' ');
+    });
+
+    return result;
+}
+
+function escapeHtml(s) {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+function renderFormularz(opinia) {
+    const tpl = szablonyPoradni[aktywnySzablon];
+    const container = document.getElementById('formularz-poradni');
+    if (!tpl || !container) return;
+
+    const sekcjeTekst = parsujOpinie(opinia, tpl);
+
+    container.innerHTML = `
+        <div class="fp-naglowek-strony">
+            <div class="fp-pieczec">Pieczęć szkoły</div>
+            <div class="fp-miasto-data">${escapeHtml(tpl.miasto)} <span class="fp-kropki-data"></span></div>
+        </div>
+        <h2 class="fp-tytul">${escapeHtml(tpl.tytul)}</h2>
+        <h3 class="fp-cel">${escapeHtml(tpl.celInstytucji)}</h3>
+        <p class="fp-adres">${escapeHtml(tpl.adresPoradni)}  ${escapeHtml(tpl.telefonPoradni)}</p>
+        <div class="fp-pola-osobowe">
+            ${tpl.polaOsobowe.map(p => `
+                <div class="fp-pole-osobowe">
+                    <span class="fp-etykieta">${escapeHtml(p)}</span>
+                    <span class="fp-kropki-pole"></span>
+                </div>
+            `).join('')}
+        </div>
+        <div class="fp-sekcje">
+            ${tpl.sekcje.map(s => {
+                const linieTla = Array(s.linie).fill(0).map(() => '<div class="fp-linia-pusta"></div>').join('');
+                const klasaBreak = s.breakBefore ? ' fp-sekcja--break' : '';
+                return `
+                <div class="fp-sekcja${klasaBreak}">
+                    <h4 class="fp-sekcja-tytul">${escapeHtml(s.naglowek)}</h4>
+                    <div class="fp-slot">
+                        <div class="fp-linie-tlo">${linieTla}</div>
+                        <div class="fp-tresc">${escapeHtml(sekcjeTekst[s.id] || '')}</div>
+                    </div>
+                </div>
+                `;
+            }).join('')}
+        </div>
+        <div class="fp-podpisy">
+            ${tpl.podpisy.map(p => `
+                <div class="fp-podpis-etykieta">${escapeHtml(p)}</div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function podlaczDropdownSzablonu() {
+    const sel = document.getElementById('szablon-poradni');
+    if (!sel) return;
+    sel.addEventListener('change', e => {
+        aktywnySzablon = e.target.value;
+        const opinia = document.getElementById('wynik-opinia').textContent;
+        if (opinia) renderFormularz(opinia);
+    });
 }
