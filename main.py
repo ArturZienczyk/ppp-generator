@@ -1,38 +1,44 @@
+import traceback
+
 import vertexai
 from vertexai.generative_models import GenerativeModel
 import functions_framework
 
+
 @functions_framework.http
 def generate_ppp_opinion(request):
     # CORS headers
-    if request.method == 'OPTIONS':
+    if request.method == "OPTIONS":
         headers = {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Max-Age': '3600'
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Max-Age": "3600",
         }
-        return ('', 204, headers)
-    
-    headers = {
-        'Access-Control-Allow-Origin': '*'
-    }
-    
+        return ("", 204, headers)
+
+    headers = {"Access-Control-Allow-Origin": "*"}
+
     try:
         request_json = request.get_json(silent=True)
-        if not request_json or 'dane_ucznia' not in request_json or 'opisy' not in request_json:
-            return ({'error': 'Wymagane pola: "dane_ucznia" i "opisy" (lista).'}, 400, headers)
-        
-        dane_ucznia = request_json['dane_ucznia']
-        opisy = request_json['opisy']
-        
-        vertexai.init(
-            project='generatordokumentownauczyciela',
-            location='us-central1'      
-        )
-        
+        if (
+            not request_json
+            or "dane_ucznia" not in request_json
+            or "opisy" not in request_json
+        ):
+            return (
+                {"error": 'Wymagane pola: "dane_ucznia" i "opisy" (lista).'},
+                400,
+                headers,
+            )
+
+        dane_ucznia = request_json["dane_ucznia"]
+        opisy = request_json["opisy"]
+
+        vertexai.init(project="generatordokumentownauczyciela", location="us-central1")
+
         opisy_str = "\n- " + "\n- ".join(opisy)
-        
+
         prompt = f"""Jesteś doświadczonym nauczycielem-wychowawcą z 20-letnim stażem. Twoje serce bije dla dzieci.
 
 Piszesz opinię do Poradni Psychologiczno-Pedagogicznej.
@@ -75,19 +81,23 @@ Pod każdym nagłówkiem napisz 2-5 zdań jako nauczyciel-wychowawca ("Jako wych
 Język ciepły, konkretny, z przykładami. Balans trudności i mocnych stron.
 
 DŁUGOŚĆ: 500-700 słów"""
-        
-        model = GenerativeModel('gemini-2.5-pro')
+
+        model = GenerativeModel("gemini-2.5-pro")
         response = model.generate_content(prompt)
-        
-        return ({
-            'success': True,
-            'opinia': response.text
-        }, 200, headers)
-        
+
+        return ({"success": True, "opinia": response.text}, 200, headers)
+
     except Exception as e:
+        # Szczegóły zostają w logach (Cloud Logging), do klienta idzie tylko ogólny
+        # komunikat. str(e) w odpowiedzi HTTP wyciekał ścieżki, nazwę projektu GCP
+        # i konfigurację Vertex AI — endpoint jest publiczny (--allow-unauthenticated).
         print(f"Błąd: {e}")
-        return ({
-            'success': False,
-            'error': str(e)
-        }, 500, headers)
-        
+        traceback.print_exc()
+        return (
+            {
+                "success": False,
+                "error": "Błąd generowania opinii. Spróbuj ponownie lub zgłoś problem.",
+            },
+            500,
+            headers,
+        )

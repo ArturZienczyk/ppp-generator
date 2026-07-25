@@ -34,8 +34,10 @@ Gemini 2.5 Pro Model
    - Balance checker to prevent overly negative assessments
 
 2. **Backend Options**
-   - **main.py**: Google Cloud Function (production) - deployed to europe-west4
+   - **main.py**: Google Cloud Function - ⚠️ NIEAKTUALNY wobec produkcji, patrz STOP w sekcji Deployment
    - **app.py**: Flask proxy for localhost development - proxies requests to Cloud Run endpoint
+     (⚠️ `CLOUD_FUNCTION_URL` wskazuje stary Cloud Run w `us-central1` z INNYM kontraktem
+     `{dane_ucznia, opisy}` — to nie jest endpoint, którego używa produkcyjny front)
 
 3. **AI Integration**
    - Uses Vertex AI SDK with `gemini-2.5-pro` model
@@ -85,6 +87,22 @@ python app.py
 - No build step required (static HTML/CSS/JS)
 
 **Backend (Google Cloud Function):**
+
+> ⛔ **STOP — `main.py` w tym repo NIE jest kodem wdrożonym (stan 2026-07-25).**
+> Deploy `--source=.` z obecnego stanu repo **rozwali działającą produkcję.**
+>
+> Dowód: front (`script.js:985-990`) wysyła `{imie, wiek, klasa, sekcje}`, a `main.py:23`
+> wymaga `{dane_ucznia, opisy}` — każde generowanie skończyłoby się błędem 400.
+> Test wdrożonej funkcji pustym payloadem zwraca `{"error":"Brak danych JSON"}`,
+> czyli komunikat z NOWSZEJ wersji, której w tym repo nie ma.
+>
+> Nowsza wersja (kontrakt zgodny z frontem, prompt 8 sekcji) leży w
+> `D:\Projects\slowko-generator\generator-naprawa\main.py` — trafiła tam przypadkiem
+> przy porządkach repo słówek. **Przed jakimkolwiek deployem: zsynchronizuj repo
+> z produkcją.** Nierozstrzygnięte przy synchronizacji: region Vertex AI
+> (`us-central1` tutaj vs `europe-west4` w nowszej kopii) — sprawdź, co ma wdrożona
+> funkcja, zanim nadpiszesz.
+
 ```bash
 # Deploy to europe-west4 region
 gcloud functions deploy generate-ppp-opinion \

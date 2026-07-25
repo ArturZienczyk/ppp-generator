@@ -1,3 +1,5 @@
+import traceback
+
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import requests
@@ -6,70 +8,74 @@ app = Flask(__name__)
 CORS(app)
 
 # Twój działający endpoint
-CLOUD_FUNCTION_URL = "https://generate-ppp-opinion-931441169979.us-central1.run.app/generuj"
-@app.route('/')
+CLOUD_FUNCTION_URL = (
+    "https://generate-ppp-opinion-931441169979.us-central1.run.app/generuj"
+)
+
+
+@app.route("/")
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory(".", "index.html")
 
-@app.route('/<path:path>')
+
+@app.route("/<path:path>")
 def serve_static(path):
-    return send_from_directory('.', path)
+    return send_from_directory(".", path)
 
-@app.route('/generuj', methods=['POST'])
+
+@app.route("/generuj", methods=["POST"])
 def generuj_opinie():
     try:
         dane = request.json
-        imie = dane.get('imie', '')
-        wiek = dane.get('wiek', '')
-        klasa = dane.get('klasa', '')
-        sekcje = dane.get('sekcje', {})
-        
+        imie = dane.get("imie", "")
+        wiek = dane.get("wiek", "")
+        klasa = dane.get("klasa", "")
+        sekcje = dane.get("sekcje", {})
+
         # Budowanie danych ucznia
         dane_ucznia = f"Imię: {imie}, Wiek: {wiek} lat, Klasa: {klasa}"
-        
+
         # Zbieranie wszystkich obserwacji
         opisy = []
         for klucz, dane_sekcji in sekcje.items():
-            opcje = dane_sekcji.get('opcje', [])
-            dodatkowe = dane_sekcji.get('dodatkowe', '')
-            
+            opcje = dane_sekcji.get("opcje", [])
+            dodatkowe = dane_sekcji.get("dodatkowe", "")
+
             for opcja in opcje:
                 opisy.append(opcja)
-            
+
             if dodatkowe:
                 opisy.append(dodatkowe)
-        
+
         # Wywołanie Cloud Run
         payload = {
-            'dane_ucznia': dane_ucznia,
-            'opisy': opisy if opisy else ["Brak szczegółowych obserwacji"]
+            "dane_ucznia": dane_ucznia,
+            "opisy": opisy if opisy else ["Brak szczegółowych obserwacji"],
         }
-        
+
         print(f"Wysyłam do Cloud Run: {payload}")
-        
+
         response = requests.post(CLOUD_FUNCTION_URL, json=payload, timeout=60)
         response.raise_for_status()
-        
+
         result = response.json()
-        
-        return jsonify({
-            'success': True,
-            'opinia': result.get('opinia', '')
-        })
-        
+
+        return jsonify({"success": True, "opinia": result.get("opinia", "")})
+
+    # Szczegóły wyjątku zostają w logach serwera, do klienta idzie ogólny komunikat
+    # (ten sam wzorzec co w main.py — str(e) wycieka ścieżki i konfigurację).
     except requests.exceptions.RequestException as e:
         print(f"Błąd połączenia: {e}")
-        return jsonify({
-            'success': False,
-            'error': f'Błąd połączenia z serwerem: {str(e)}'
-        }), 500
+        return jsonify(
+            {"success": False, "error": "Błąd połączenia z serwerem generującym."}
+        ), 500
     except Exception as e:
         print(f"Błąd: {e}")
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        traceback.print_exc()
+        return jsonify(
+            {"success": False, "error": "Błąd generowania opinii. Spróbuj ponownie."}
+        ), 500
 
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True)
-    
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5000, debug=True)
