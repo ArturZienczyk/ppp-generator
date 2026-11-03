@@ -40,7 +40,7 @@ Gemini 2.5 Pro Model
      `{dane_ucznia, opisy}` — to nie jest endpoint, którego używa produkcyjny front)
 
 3. **AI Integration**
-   - Uses Vertex AI SDK with `gemini-2.5-pro` model
+   - Uses Vertex AI SDK with `gemini-3.8-flash` model (location=global)
    - Prompt engineering emphasizes "Truth with Love" ("Prawda z Miłością") approach
    - Teacher persona: 20-year veteran educator who sees whole child, not just problems
    - Structured 8-section output matching official PPP form requirements
@@ -97,8 +97,10 @@ python app.py
 > Kontrakt `{imie, wiek, klasa, sekcje}` zgodny z frontem (`script.js:980`).
 > Kopia w `D:\Projects\slowko-generator\generator-naprawa\` jest już zbędna (to samo).
 >
-> **Model:** `gemini-2.5-pro` znika 1.12.2026 → auto-przekierowanie na `gemini-3.8-flash`
-> (proste `generate_content`, bez narzędzi — działa bez zmian kodu; test jakości OK).
+> **Model (od 2026-11-03, wdrożone rev. 00033):** `gemini-3.8-flash` przez Vertex `location="global"`
+> — w `europe-west4` Flash nie istnieje (404). Świadoma decyzja usera: model liczy poza regionem UE
+> (dane pod pseudonimami); sama funkcja stoi w `europe-west4`. Powód: 2.5-pro znika 1.12.2026,
+> a Flash trzyma zakaz dopisywania faktów (4/4 pustych sekcji vs 2/4 u Pro).
 
 ```bash
 # Deploy to europe-west4 region
@@ -114,7 +116,7 @@ gcloud functions deploy generate-ppp-opinion \
   --memory=1GB
 ```
 
-**Important:** Backend uses `europe-west4` both for the Cloud Function and Vertex AI initialization (`main.py`, `vertexai.init`).
+**Important:** Cloud Function runs in `europe-west4`; Vertex AI uses `location="global"` (Flash unavailable in europe-west4).
 
 ## Code Structure Insights
 

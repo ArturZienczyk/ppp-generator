@@ -10,7 +10,7 @@ def generate_ppp_opinion(request):
     """
     Generator opinii do PPP - wersja scalona
     Format: {imie, wiek, klasa, sekcje: {...}}
-    Model: Gemini 2.5 Pro
+    Model: Gemini 3.8 Flash (Vertex, location=global)
     Prompt: 8 akapitow wg dokumentu poradni
     """
 
@@ -40,7 +40,10 @@ def generate_ppp_opinion(request):
         sekcje = request_json.get("sekcje", {})
 
         # Inicjalizacja Vertex AI
-        vertexai.init(project="generatordokumentownauczyciela", location="europe-west4")
+        # location="global": gemini-3.8-flash w Vertex nie istnieje w europe-west4 (404,
+        # sprawdzone 2026-11-03). Swiadoma decyzja usera: model liczy poza regionem UE,
+        # dane sa pod pseudonimami. Sama funkcja dalej stoi w europe-west4.
+        vertexai.init(project="generatordokumentownauczyciela", location="global")
 
         # Budowanie opisu z sekcji
         opisy_lista = []
@@ -128,8 +131,9 @@ ZAKAZ DOPISYWANIA FAKTOW (opinia trafia do poradni jako dokument):
 
 DLUGOSC: 500-700 slow"""
 
-        # Wywolanie Gemini 2.5 Pro
-        model = GenerativeModel("gemini-2.5-pro")
+        # gemini-3.8-flash: 2.5-pro wycofany 2026-12-01; Flash trzyma zakaz dopisywania
+        # faktow (test 3 uczniow: 4/4 pustych sekcji oznaczone vs 2/4 u Pro)
+        model = GenerativeModel("gemini-3.8-flash")
         response = model.generate_content(prompt)
 
         return ({"success": True, "opinia": response.text}, 200, headers)
