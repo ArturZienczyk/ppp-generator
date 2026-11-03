@@ -88,20 +88,17 @@ python app.py
 
 **Backend (Google Cloud Function):**
 
-> ⛔ **STOP — `main.py` w tym repo NIE jest kodem wdrożonym (stan 2026-07-25).**
-> Deploy `--source=.` z obecnego stanu repo **rozwali działającą produkcję.**
+> ✅ **Repo zsynchronizowane z produkcją 2026-11-03.** `main.py` + `requirements.txt` =
+> kod wdrożony (pobrany z `gs://gcf-v2-sources-931441169979-europe-west4/...`, deploy
+> 2025-10-19) + dwie zmiany jeszcze NIEWDROŻONE: generyczny komunikat błędu (bez `str(e)`)
+> i blok „ZAKAZ DOPISYWANIA FAKTOW” w prompcie (stary prompt kazał pisać 2-5 zdań pod
+> każdym nagłówkiem, więc model zmyślał fakty przy pustych sekcjach — test 3 uczniów
+> × Pro/Flash). Region Vertex AI: `europe-west4` (taki ma wdrożona funkcja).
+> Kontrakt `{imie, wiek, klasa, sekcje}` zgodny z frontem (`script.js:980`).
+> Kopia w `D:\Projects\slowko-generator\generator-naprawa\` jest już zbędna (to samo).
 >
-> Dowód: front (`script.js:985-990`) wysyła `{imie, wiek, klasa, sekcje}`, a `main.py:23`
-> wymaga `{dane_ucznia, opisy}` — każde generowanie skończyłoby się błędem 400.
-> Test wdrożonej funkcji pustym payloadem zwraca `{"error":"Brak danych JSON"}`,
-> czyli komunikat z NOWSZEJ wersji, której w tym repo nie ma.
->
-> Nowsza wersja (kontrakt zgodny z frontem, prompt 8 sekcji) leży w
-> `D:\Projects\slowko-generator\generator-naprawa\main.py` — trafiła tam przypadkiem
-> przy porządkach repo słówek. **Przed jakimkolwiek deployem: zsynchronizuj repo
-> z produkcją.** Nierozstrzygnięte przy synchronizacji: region Vertex AI
-> (`us-central1` tutaj vs `europe-west4` w nowszej kopii) — sprawdź, co ma wdrożona
-> funkcja, zanim nadpiszesz.
+> **Model:** `gemini-2.5-pro` znika 1.12.2026 → auto-przekierowanie na `gemini-3.8-flash`
+> (proste `generate_content`, bez narzędzi — działa bez zmian kodu; test jakości OK).
 
 ```bash
 # Deploy to europe-west4 region
@@ -117,7 +114,7 @@ gcloud functions deploy generate-ppp-opinion \
   --memory=1GB
 ```
 
-**Important:** Backend uses `us-central1` for Vertex AI initialization (main.py:31) but Cloud Function runs in `europe-west4` for EU data residency.
+**Important:** Backend uses `europe-west4` both for the Cloud Function and Vertex AI initialization (`main.py`, `vertexai.init`).
 
 ## Code Structure Insights
 
