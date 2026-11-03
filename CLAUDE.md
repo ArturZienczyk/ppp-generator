@@ -34,7 +34,7 @@ Gemini 2.5 Pro Model
    - Balance checker to prevent overly negative assessments
 
 2. **Backend Options**
-   - **main.py**: Google Cloud Function - ⚠️ NIEAKTUALNY wobec produkcji, patrz STOP w sekcji Deployment
+   - **main.py**: Google Cloud Function — zsynchronizowany z produkcją 2026-11-03 (patrz sekcja Deployment)
    - **app.py**: Flask proxy for localhost development - proxies requests to Cloud Run endpoint
      (⚠️ `CLOUD_FUNCTION_URL` wskazuje stary Cloud Run w `us-central1` z INNYM kontraktem
      `{dane_ucznia, opisy}` — to nie jest endpoint, którego używa produkcyjny front)
